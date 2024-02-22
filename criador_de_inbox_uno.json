@@ -1,0 +1,414 @@
+{
+  "name": "criador_de_inbox - UNO",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Workflow Para Criar Inbox\n**Aqui você configura a comunicação entre o chatwoot e a Uno API para criar novas instâncias a partir do chatwoot**\n**Instruções**\n**No node Info Base, configure as variáveis de seu Chatwoot e Uno API**",
+        "width": 1129.7777777777778,
+        "color": 4
+      },
+      "id": "1a0be742-c478-4bd6-89e3-529604747a30",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        380,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "abc42ee6-c2ac-4b8e-bd7c-3bdfd6bf6fad",
+              "leftValue": "={{ $json.error.message }}",
+              "rightValue": "Phone number has already been taken",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c0e480c4-e8f6-4041-a29d-959d9d100971",
+      "name": "Erro?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        980,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "872eccfe-53ce-488d-a4b5-1883b94144a0",
+              "leftValue": "={{ $json.payload.contact.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d16dcdc4-5741-4597-a647-1de012c67aa5",
+      "name": "Sucesso?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Info Base').item.json[\"chatwoot_url\"] }}/api/v1/accounts/{{ $('Info Base').item.json[\"chatwoot_account_id\"] }}/contacts/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "={{ $('Info Base').item.json[\"chatwoot_token\"] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"inbox_id\": {{ $('Cria Inbox').item.json[\"id\"] }},\n    \"name\": \"Inbox-{{ $('Info Base').item.json[\"instance_name\"] }}-{{ $('Info Base').item.json[\"phone_number\"] }} \",\n    \"phone_number\": \"+{{ $('Info Base').item.json[\"phone_number\"] }}\",\n    \"avatar_url\": \"{{ $('Info Base').item.json[\"logo\"] }}\"\n}",
+        "options": {}
+      },
+      "id": "f9d2ccb6-5c28-4c13-a885-85a64663c305",
+      "name": "Cria Contato",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1200,
+        620
+      ],
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Info Base').item.json[\"chatwoot_url\"] }}/api/v1/accounts/{{ $('Info Base').item.json[\"chatwoot_account_id\"] }}/inboxes/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "={{ $('Info Base').item.json[\"chatwoot_token\"] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"name\": \"{{ $('Info Base').item.json[\"instance_name\"] }}\",\n    \"channel\": {\n    \"type\": \"whatsapp\",\n    \"phone_number\": \"+{{$('Info Base').item.json[\"phone_number\"]}}\",\n    \"provider\": \"whatsapp_cloud\",\n    \"provider_config\":  { \n    \"url\": \"{{ $('Info Base').item.json[\"uno_url\"] }}\",\n    \"api_key\": \"{{ $('Info Base').item.json[\"unoapi_auth_token\"]}}\",\n    \"phone_number_id\": \"{{$('Info Base').item.json[\"phone_number\"]}}\",        \n    \"business_account_id\": \"{{$('Info Base').item.json[\"phone_number\"]}}\",\n \"webhook_verify_token\": \"{{ $('Info Base').item.json[\"unoapi_auth_token\"]}}\"\n\n} \n}\n}",
+        "options": {}
+      },
+      "id": "3940eb7b-ba33-4cd2-9af1-47c4ada7fb48",
+      "name": "Cria Inbox",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        740,
+        620
+      ],
+      "retryOnFail": true,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Info Base').item.json[\"chatwoot_url\"] }}/api/v1/accounts/{{ $('Info Base').item.json[\"chatwoot_account_id\"] }}/conversations/{{ $('Info Base').item.json[\"conversation_id\"] }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "={{ $('Info Base').item.json[\"chatwoot_token\"] }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"content\": \"✅ Caixa de entrada,**{{ $('Info Base').item.json[\"instance_name\"] }}** criada com suceso.\\n✅ Contato,**Inbox-{{ $('Info Base').item.json[\"instance_name\"] }}-{{ $('Info Base').item.json[\"phone_number\"] }}** criado com suceso.\",\n\"message_type\": \"outgoing\",\n\"private\": false\n}",
+        "options": {}
+      },
+      "id": "726c7a00-7d87-4809-95c0-f26b151812db",
+      "name": "Notificacao_Sucesso",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1840,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Info Base').item.json[\"chatwoot_url\"] }}/api/v1/accounts/{{ $('Info Base').item.json[\"chatwoot_account_id\"] }}/conversations/{{ $('Info Base').item.json[\"conversation_id\"] }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "={{ $('Info Base').item.json[\"chatwoot_token\"] }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"content\": \"❌ Erro ao criar a caixa e entrada: **{{ $('Info Base').item.json[\"instance_name\"] }}**\\n\\n**Atenção: O número {{ $('Info Base').item.json[\"phone_number\"] }} já está sendo usado em uma caixa de entrada. Por favor, tente novamente.**\",\n\"message_type\": \"outgoing\",\n\"private\": false\n}",
+        "options": {}
+      },
+      "id": "57a4fc3e-fec4-4722-ad55-20977956bb5a",
+      "name": "Notificacao_Erro1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1180,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Info Base').item.json[\"chatwoot_url\"] }}/api/v1/accounts/{{ $('Info Base').item.json[\"chatwoot_account_id\"] }}/conversations/{{ $('Info Base').item.json[\"conversation_id\"] }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "={{ $('Info Base').item.json[\"chatwoot_token\"] }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"content\": \"✅ Caixa de entrada,**{{ $('Info Base').item.json[\"instance_name\"] }}** criada com suceso.\\n\\n❌ Erro ao criar o contato: **Inbox-{{ $('Info Base').item.json[\"instance_name\"] }}-{{ $('Info Base').item.json[\"phone_number\"] }}**\\n\\n**Atenção: Este número {{ $('Info Base').item.json[\"phone_number\"] }} já está registrado como contato, edite ele com o prefixo Inbox-{{ $('Info Base').item.json[\"instance_name\"] }}- para facilitar a sua localização ao gerar Qrcodes.**\",\n\"message_type\": \"outgoing\",\n\"private\": false\n}",
+        "options": {}
+      },
+      "id": "ea78be70-fc69-4aa5-a48b-58bb92cb2568",
+      "name": "Notificacao_Erro",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1840,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "chatwoot_url",
+              "value": "=CHATWOOT_URL"
+            },
+            {
+              "name": "uno_url",
+              "value": "UNO_URL"
+            },
+            {
+              "name": "unoapi_auth_token",
+              "value": "UNOAPI_AUTH_TOKEN"
+            },
+            {
+              "name": "organization",
+              "value": "={{ $json.query.organization }}"
+            },
+            {
+              "name": "instance_name",
+              "value": "={{ $json.body.messages[0].content.split(':')[1] }}"
+            },
+            {
+              "name": "chatwoot_token",
+              "value": "={{ $json.query.utoken }}"
+            },
+            {
+              "name": "phone_number",
+              "value": "={{ $json.body.messages[0].content.split(':')[2] }}"
+            },
+            {
+              "name": "logo",
+              "value": "ORGANIZATION_LOGO"
+            }
+          ],
+          "number": [
+            {
+              "name": "chatwoot_account_id",
+              "value": "={{ $json.body.messages[0].account_id }}"
+            },
+            {
+              "name": "=conversation_id",
+              "value": "={{ $json.body.messages[0].conversation_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8f39b84e-4d9b-4bc0-bd9e-8892aa9ca23d",
+      "name": "Info Base",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        580,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "inbox_whatsapp",
+        "options": {}
+      },
+      "id": "6a8c8b14-d563-465f-96a5-c353239bf8c7",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        420,
+        620
+      ],
+      "webhookId": "761362a3-5c4d-4fdd-98ba-84c9ad17f4ff"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Erro?": {
+      "main": [
+        [
+          {
+            "node": "Notificacao_Erro1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cria Contato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sucesso?": {
+      "main": [
+        [
+          {
+            "node": "Notificacao_Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notificacao_Erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria Contato": {
+      "main": [
+        [
+          {
+            "node": "Sucesso?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria Inbox": {
+      "main": [
+        [
+          {
+            "node": "Erro?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info Base": {
+      "main": [
+        [
+          {
+            "node": "Cria Inbox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Info Base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c167da65-c9e3-496a-8b92-fdbfda1f332d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6205909f9d747936d7a7155211377bac1272fdfe09fc53954fc6a79301f853d3"
+  },
+  "id": "R9ENLOtWmcSTC88L",
+  "tags": [
+    {
+      "createdAt": "2024-02-22T20:18:21.869Z",
+      "updatedAt": "2024-02-22T20:18:21.869Z",
+      "id": "EVMqRtt7FvULzmEO",
+      "name": "uno2"
+    }
+  ]
+}
