@@ -1,5 +1,5 @@
 {
-  "name": "criador_de_inbox - UNO",
+  "name": "criador_de_inbox_uno",
   "nodes": [
     {
       "parameters": {
@@ -7,13 +7,13 @@
         "width": 1129.7777777777778,
         "color": 4
       },
-      "id": "1a0be742-c478-4bd6-89e3-529604747a30",
+      "id": "d9dbec24-7fc5-44fb-8023-3a9cc628e65a",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        380,
-        220
+        360,
+        280
       ]
     },
     {
@@ -39,13 +39,13 @@
         },
         "options": {}
       },
-      "id": "c0e480c4-e8f6-4041-a29d-959d9d100971",
+      "id": "b987bf04-41a9-4d85-babc-341ebe9ca24e",
       "name": "Erro?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        980,
-        620
+        960,
+        680
       ]
     },
     {
@@ -72,13 +72,13 @@
         },
         "options": {}
       },
-      "id": "d16dcdc4-5741-4597-a647-1de012c67aa5",
+      "id": "708d7c85-4d11-44a6-b3c0-b2fb61cbf335",
       "name": "Sucesso?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        1420,
-        620
+        1400,
+        680
       ]
     },
     {
@@ -99,13 +99,13 @@
         "jsonBody": "={\n    \"inbox_id\": {{ $('Cria Inbox').item.json[\"id\"] }},\n    \"name\": \"Inbox-{{ $('Info Base').item.json[\"instance_name\"] }}-{{ $('Info Base').item.json[\"phone_number\"] }} \",\n    \"phone_number\": \"+{{ $('Info Base').item.json[\"phone_number\"] }}\",\n    \"avatar_url\": \"{{ $('Info Base').item.json[\"logo\"] }}\"\n}",
         "options": {}
       },
-      "id": "f9d2ccb6-5c28-4c13-a885-85a64663c305",
+      "id": "e84f0bf5-8217-44ba-96aa-a4f33b0a9ef5",
       "name": "Cria Contato",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        1200,
-        620
+        1180,
+        680
       ],
       "retryOnFail": true,
       "onError": "continueRegularOutput"
@@ -125,16 +125,16 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n    \"name\": \"{{ $('Info Base').item.json[\"instance_name\"] }}\",\n    \"channel\": {\n    \"type\": \"whatsapp\",\n    \"phone_number\": \"+{{$('Info Base').item.json[\"phone_number\"]}}\",\n    \"provider\": \"whatsapp_cloud\",\n    \"provider_config\":  { \n    \"url\": \"{{ $('Info Base').item.json[\"uno_url\"] }}\",\n    \"api_key\": \"{{ $('Info Base').item.json[\"unoapi_auth_token\"]}}\",\n    \"phone_number_id\": \"{{$('Info Base').item.json[\"phone_number\"]}}\",        \n    \"business_account_id\": \"{{$('Info Base').item.json[\"phone_number\"]}}\",\n \"webhook_verify_token\": \"{{ $('Info Base').item.json[\"unoapi_auth_token\"]}}\"\n\n} \n}\n}",
+        "jsonBody": "={\n    \"name\": \"{{ $('Info Base').item.json[\"instance_name\"] }}\",\n    \"channel\": {\n    \"type\": \"whatsapp\",\n    \"phone_number\": \"+{{$('Info Base').item.json[\"phone_number\"]}}\",\n    \"provider\": \"whatsapp_cloud\",\n    \"provider_config\":  { \n    \"url\": \"{{ $('Info Base').item.json[\"uno_url\"] }}\",\n    \"api_key\": \"{{ $('Info Base').item.json[\"unoapi_auth_token\"]}}\",\n    \"phone_number_id\": \"{{$('Info Base').item.json[\"phone_number\"]}}\",        \n    \"business_account_id\": \"{{$('Info Base').item.json[\"phone_number\"]}}\"\n\n} \n}\n}",
         "options": {}
       },
-      "id": "3940eb7b-ba33-4cd2-9af1-47c4ada7fb48",
+      "id": "483cd80d-9251-45ff-a55c-3a237a721120",
       "name": "Cria Inbox",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
       "position": [
-        740,
-        620
+        720,
+        680
       ],
       "retryOnFail": true,
       "alwaysOutputData": true,
@@ -162,13 +162,13 @@
         "jsonBody": "={\n\"content\": \"✅ Caixa de entrada,**{{ $('Info Base').item.json[\"instance_name\"] }}** criada com suceso.\\n✅ Contato,**Inbox-{{ $('Info Base').item.json[\"instance_name\"] }}-{{ $('Info Base').item.json[\"phone_number\"] }}** criado com suceso.\",\n\"message_type\": \"outgoing\",\n\"private\": false\n}",
         "options": {}
       },
-      "id": "726c7a00-7d87-4809-95c0-f26b151812db",
+      "id": "d8988acc-2a30-47bb-b9a3-251c8c88cf48",
       "name": "Notificacao_Sucesso",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        1840,
-        560
+        1820,
+        620
       ]
     },
     {
@@ -193,13 +193,13 @@
         "jsonBody": "={\n\"content\": \"❌ Erro ao criar a caixa e entrada: **{{ $('Info Base').item.json[\"instance_name\"] }}**\\n\\n**Atenção: O número {{ $('Info Base').item.json[\"phone_number\"] }} já está sendo usado em uma caixa de entrada. Por favor, tente novamente.**\",\n\"message_type\": \"outgoing\",\n\"private\": false\n}",
         "options": {}
       },
-      "id": "57a4fc3e-fec4-4722-ad55-20977956bb5a",
+      "id": "de84f7ed-f68a-479a-8c0c-bfdc1aa393da",
       "name": "Notificacao_Erro1",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        1180,
-        460
+        1160,
+        520
       ]
     },
     {
@@ -224,13 +224,13 @@
         "jsonBody": "={\n\"content\": \"✅ Caixa de entrada,**{{ $('Info Base').item.json[\"instance_name\"] }}** criada com suceso.\\n\\n❌ Erro ao criar o contato: **Inbox-{{ $('Info Base').item.json[\"instance_name\"] }}-{{ $('Info Base').item.json[\"phone_number\"] }}**\\n\\n**Atenção: Este número {{ $('Info Base').item.json[\"phone_number\"] }} já está registrado como contato, edite ele com o prefixo Inbox-{{ $('Info Base').item.json[\"instance_name\"] }}- para facilitar a sua localização ao gerar Qrcodes.**\",\n\"message_type\": \"outgoing\",\n\"private\": false\n}",
         "options": {}
       },
-      "id": "ea78be70-fc69-4aa5-a48b-58bb92cb2568",
+      "id": "0320a9bc-9aa7-4f23-a4dc-9a561b2c7e2a",
       "name": "Notificacao_Erro",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        1840,
-        720
+        1820,
+        780
       ]
     },
     {
@@ -284,13 +284,13 @@
         },
         "options": {}
       },
-      "id": "8f39b84e-4d9b-4bc0-bd9e-8892aa9ca23d",
+      "id": "55ad5142-c530-45d1-9d28-d3be816c9854",
       "name": "Info Base",
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
       "position": [
-        580,
-        620
+        560,
+        680
       ]
     },
     {
@@ -299,13 +299,13 @@
         "path": "inbox_whatsapp",
         "options": {}
       },
-      "id": "6a8c8b14-d563-465f-96a5-c353239bf8c7",
+      "id": "e9f2a5ec-e547-4e94-bdb9-f105d366dffc",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        420,
-        620
+        400,
+        680
       ],
       "webhookId": "761362a3-5c4d-4fdd-98ba-84c9ad17f4ff"
     }
@@ -397,18 +397,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "c167da65-c9e3-496a-8b92-fdbfda1f332d",
+  "versionId": "00aebcf1-b123-4e3f-9e0f-f8205ef59ab5",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "6205909f9d747936d7a7155211377bac1272fdfe09fc53954fc6a79301f853d3"
+    "instanceId": "b95399774c2847bb6f587b2e4601b266ba6802f1c4c414b70534ae738a677bfb"
   },
-  "id": "R9ENLOtWmcSTC88L",
-  "tags": [
-    {
-      "createdAt": "2024-02-22T20:18:21.869Z",
-      "updatedAt": "2024-02-22T20:18:21.869Z",
-      "id": "EVMqRtt7FvULzmEO",
-      "name": "uno2"
-    }
-  ]
+  "id": "i82WSFD0LZOOcSyk",
+  "tags": []
 }
